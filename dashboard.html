@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeHome System - Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+    }
+
+    .navbar {
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      color: #60a5fa;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: #cbd5e1;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      color: #60a5fa;
+      background: rgba(96, 165, 250, 0.1);
+      border-color: rgba(96, 165, 250, 0.3);
+    }
+
+    .nav-link.active {
+      color: #60a5fa;
+      background: rgba(96, 165, 250, 0.2);
+      border-color: rgba(96, 165, 250, 0.5);
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
+      transform: scale(1.05);
+    }
+
+    .main-content {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .welcome-section {
+      background: rgba(30, 41, 59, 0.95);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .welcome-title {
+      font-size: 2rem;
+      color: #60a5fa;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+    }
+
+    .welcome-subtitle {
+      color: #cbd5e1;
+      font-size: 1.1rem;
+    }
+
+    .company-info {
+      background: rgba(30, 41, 59, 0.95);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      text-align: justify;
+    }
+
+    .company-info h2 {
+      color: #60a5fa;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .company-values {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .value-box {
+      background: rgba(96, 165, 250, 0.1);
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .value-box h4 {
+      color: #60a5fa;
+      margin-bottom: 0.5rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-card {
+      background: rgba(30, 41, 59, 0.95);
+      border-radius: 15px;
+      padding: 2rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border-color: rgba(96, 165, 250, 0.5);
+    }
+
+    .card-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #60a5fa;
+    }
+
+    .promo-section {
+      background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(96, 165, 250, 0.5);
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 15px rgba(96, 165, 250, 0.3); }
+      to { box-shadow: 0 0 30px rgba(96, 165, 250, 0.8); }
+    }
+
+    .promo-btn {
+      background: #facc15;
+      color: #1e293b;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-weight: bold;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .promo-btn:hover {
+      background: #fde047;
+      transform: scale(1.05);
+    }
+
+    /* Modal de cámaras */
+    .camera-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .camera-modal.active {
+      display: flex;
+    }
+
+    .camera-modal-content {
+      background: #0f172a;
+      border-radius: 15px;
+      padding: 1rem;
+      width: 80%;
+      max-width: 900px;
+      height: 80%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .camera-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #60a5fa;
+      margin-bottom: 1rem;
+    }
+
+    .camera-modal-iframe {
+      flex: 1;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .camera-modal-close {
+      background: #ef4444;
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">🏠 SafeHome System</div>
+    <div class="nav-links">
+      <a class="nav-link active" onclick="goHome()">Inicio</a>
+      <a class="nav-link" onclick="openSupport()">Soporte Técnico</a>
+      <a class="nav-link" onclick="openConfig()">Configuración</a>
+      <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="welcome-section">
+      <h1 class="welcome-title">¡Bienvenido a SafeHome Security Solutions!</h1>
+      <p class="welcome-subtitle">Protegiendo hogares y empresas con tecnología de última generación.</p>
+    </div>
+
+    <div class="company-info">
+      <h2>Conoce a SafeHome Security Solutions</h2>
+      <p>En SafeHome Security Solutions, creemos que la seguridad no es un lujo, sino una necesidad.
+        Nos especializamos en videovigilancia, alarmas y monitoreo remoto para hogares y empresas.</p>
+      <p>Nuestro centro de operaciones monitorea 24/7 todas las alertas recibidas, garantizando respuesta inmediata.
+        Contamos con técnicos certificados y soporte en tiempo real.</p>
+
+      <div class="company-values">
+        <div class="value-box">
+          <h4>Misión</h4>
+          <p>Brindar soluciones de seguridad confiables e innovadoras para proteger lo que más importa.</p>
+        </div>
+        <div class="value-box">
+          <h4>Visión</h4>
+          <p>Ser la empresa líder en seguridad inteligente de Latinoamérica.</p>
+        </div>
+        <div class="value-box">
+          <h4>Valores</h4>
+          <p>Confianza, responsabilidad, innovación y compromiso.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-card" onclick="openSupport()">
+        <div class="card-icon">💬</div>
+        <h3>Soporte Técnico</h3>
+        <p>Asistencia 24/7 con monitoreo remoto y mantenimiento preventivo.</p>
+      </div>
+
+      <div class="dashboard-card" onclick="openAppointment()">
+        <div class="card-icon">📅</div>
+        <h3>Agendar Cita</h3>
+        <p>Programa revisiones, actualizaciones o instalación de nuevos dispositivos.</p>
+      </div>
+
+      <div class="dashboard-card" onclick="openCameraModal()">
+        <div class="card-icon">📹</div>
+        <h3>Cámaras de Seguridad</h3>
+        <p>Visualiza tus cámaras en tiempo real desde cualquier dispositivo.</p>
+      </div>
+
+      <div class="dashboard-card" onclick="openAlarms()">
+        <div class="card-icon">🚨</div>
+        <h3>Sistema de Alarmas</h3>
+        <p>Alertas inmediatas ante intrusiones o emergencias.</p>
+      </div>
+
+      <div class="dashboard-card" onclick="openAccess()">
+        <div class="card-icon">🔒</div>
+        <h3>Control de Acceso</h3>
+        <p>Soluciones biométricas y tarjetas inteligentes para mayor seguridad.</p>
+      </div>
+
+      <div class="dashboard-card" onclick="openReports()">
+        <div class="card-icon">📊</div>
+        <h3>Reportes</h3>
+        <p>Consulta estadísticas y reportes de actividad en tu sistema.</p>
+      </div>
+    </div>
+
+    <div class="promo-section">
+      <h2>🎄 Promoción Navideña 2025 🎁</h2>
+      <p>Protege tu hogar esta Navidad con un <strong>20% de descuento</strong> en instalación de cámaras y alarmas.</p>
+      <p>Oferta válida hasta el 31 de diciembre. ¡Tu seguridad no toma vacaciones!</p>
+      <button class="promo-btn" onclick="openPromo()">Aprovechar Oferta</button>
+    </div>
+  </div>
+
+  <!-- Modal de cámaras -->
+  <div class="camera-modal" id="cameraModal">
+    <div class="camera-modal-content">
+      <div class="camera-modal-header">
+        <h2>📹 Cámaras en Vivo</h2>
+        <button class="camera-modal-close" onclick="closeCameraModal()">Cerrar</button>
+      </div>
+      <iframe class="camera-modal-iframe" id="cameraIframe" src="doom_raycast.html"></iframe>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      alert("Sesión cerrada correctamente.");
+      location.href = "index.html";
+    }
+
+    function goHome() {
+      alert("Ya estás en el inicio del sistema SafeHome.");
+    }
+
+    function openSupport() {
+      alert("Conectando con soporte técnico de SafeHome...");
+      location.href = "soporte.html";
+    }
+
+    function openConfig() {
+      alert("Abriendo configuración del sistema...");
+    }
+
+    function openAppointment() {
+      alert("Accediendo al sistema de citas...");
+      location.href = "soporte.html";
+    }
+
+    function openAlarms() {
+      alert("Visualizando historial de alarmas y notificaciones...");
+    }
+
+    function openAccess() {
+      alert("Configurando control de acceso biométrico...");
+    }
+
+    function openReports() {
+      alert("Generando reportes de seguridad...");
+    }
+
+    function openPromo() {
+      alert("Promoción aplicada: 20% de descuento en instalación.");
+    }
+
+    function openCameraModal() {
+      document.getElementById("cameraModal").classList.add("active");
+    }
+
+    function closeCameraModal() {
+      document.getElementById("cameraModal").classList.remove("active");
+    }
+  </script>
+</body>
+</html>
+

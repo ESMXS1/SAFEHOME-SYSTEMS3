@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Raycaster — Cámaras fijas estilo FNAF</title>
+  <style>
+    html,body{height:100%;margin:0;background:#111;color:#ddd;font-family:system-ui,Segoe UI,Roboto,Arial}
+    #ui{position:fixed;left:12px;top:12px;z-index:10;background:rgba(0,0,0,0.45);padding:8px;border-radius:8px}
+    canvas{display:block;width:100vw;height:100vh}
+    .cam-indicator{position:fixed;right:12px;top:12px;background:rgba(0,0,0,0.45);padding:8px;border-radius:8px;font-size:13px}
+  </style>
+</head>
+<body>
+ 
+  <div class="cam-indicator" id="camIndicator">Cámara 1 / 5</div>
+  <canvas id="screen"></canvas>
+
+<script>
+(() => {
+  const canvas = document.getElementById('screen');
+  const ctx = canvas.getContext('2d');
+  let width = 640, height = 360;
+
+  function fit() {
+    const ratio = width/height;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    if (w/h > ratio) {
+      canvas.style.width = Math.round(h*ratio) + 'px';
+      canvas.style.height = h + 'px';
+    } else {
+      canvas.style.width = w + 'px';
+      canvas.style.height = Math.round(w/ratio) + 'px';
+    }
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize', fit);
+  fit();
+
+  // MAPA proporcionado por ti
+  const map = [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,1,0,0,0,1,0,1,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,1],
+    [1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+  ];
+
+  const MAP_W = map[0].length;
+  const MAP_H = map.length;
+
+  // Cámaras fijas: posición + ángulo base + rango de paneo
+  const cameras = [
+    {x: 3.5, y: 2.0, baseAngle: Math.PI/2, range: 0.5, speed: 1.2, phase: 0.0},
+    {x: 10.5, y: 2.5, baseAngle: Math.PI/1.2, range: 0.5, speed: 1.0, phase: 0.5},
+    {x: 3.0, y: 5.5, baseAngle: 0, range: 0.6, speed: 1.3, phase: 1.0},
+    {x: 12.5, y: 5.0, baseAngle: -Math.PI/2, range: 0.5, speed: 1.1, phase: 1.5},
+    {x: 7.5, y: 7.0, baseAngle: Math.PI/3, range: 0.7, speed: 0.8, phase: 2.0}
+  ];
+
+  let camIndex = 0;
+  const camIndicator = document.getElementById('camIndicator');
+
+  const FOV = Math.PI/3;
+  const NUM_RAYS = width;
+  const MAX_DEPTH = 20;
+
+  window.addEventListener('keydown', e => {
+    if (e.key.toLowerCase() === 'c') {
+      camIndex = (camIndex + 1) % cameras.length;
+      camIndicator.textContent = `Cámara ${camIndex + 1} / ${cameras.length}`;
+      e.preventDefault();
+    }
+  });
+
+  function isWall(x,y) {
+    const mx = Math.floor(x), my = Math.floor(y);
+    if (mx<0 || my<0 || mx>=MAP_W || my>=MAP_H) return true;
+    return map[my][mx] !== 0;
+  }
+
+  function castRayFrom(x,y, angle) {
+    const sin = Math.sin(angle), cos = Math.cos(angle);
+    let depth = 0.0, hit=false, side=0;
+    const stepSize = 0.02;
+    while (!hit && depth < MAX_DEPTH) {
+      depth += stepSize;
+      const px = x + cos*depth;
+      const py = y + sin*depth;
+      if (isWall(px, py)) {
+        hit = true;
+        const fx = px - Math.floor(px), fy = py - Math.floor(py);
+        side = (Math.abs(fx - 0.5) > Math.abs(fy - 0.5)) ? 0 : 1;
+        return { depth, side };
+      }
+    }
+    return { depth: MAX_DEPTH, side:0 };
+  }
+
+  function shadeColor(base, dist, side) {
+    const fog = Math.min(1, dist / 12);
+    const factor = 1 - 0.7 * fog;
+    const sideDark = side ? 0.85 : 1.0;
+    const r = Math.round(base.r * factor * sideDark);
+    const g = Math.round(base.g * factor * sideDark);
+    const b = Math.round(base.b * factor * sideDark);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  let lastTime = performance.now();
+
+  function update() {
+    const now = performance.now();
+    const t = now / 1000;
+    const dt = (now - lastTime)/1000;
+    lastTime = now;
+
+    render(t);
+    requestAnimationFrame(update);
+  }
+
+  function render(t) {
+    ctx.fillStyle = '#6aa6ff';
+    ctx.fillRect(0,0,width,height*0.5);
+    ctx.fillStyle = '#333';
+    ctx.fillRect(0,height*0.5,width,height*0.5);
+
+    const cam = cameras[camIndex];
+    const angle = cam.baseAngle + Math.sin(t * cam.speed + cam.phase) * cam.range;
+
+    for (let col=0; col<NUM_RAYS; col++) {
+      const rayScreenPos = (col / NUM_RAYS) - 0.5;
+      const rayAngle = angle + rayScreenPos * FOV;
+      const hit = castRayFrom(cam.x, cam.y, rayAngle);
+      const correctedDepth = hit.depth * Math.cos(rayAngle - angle);
+      const wallHeight = Math.min(height, (height / correctedDepth) * 1.2);
+      const wallTop = Math.round((height/2) - wallHeight/2);
+      const wallBottom = Math.round((height/2) + wallHeight/2);
+      const base = {r:200,g:200,b:180};
+      const color = shadeColor(base, correctedDepth, hit.side);
+      ctx.fillStyle = color;
+      ctx.fillRect(col, wallTop, 1, wallBottom - wallTop);
+    }
+
+    drawMiniMap(cam, angle);
+  }
+
+  function drawMiniMap(cam, angle) {
+    const scale = 8, px = 8, py = 8;
+    ctx.save();
+    ctx.globalAlpha = 0.95;
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(px-2, py-2, MAP_W*scale+4, MAP_H*scale+4);
+    for (let y=0;y<MAP_H;y++) for (let x=0;x<MAP_W;x++) {
+      ctx.fillStyle = map[y][x] ? '#999' : '#222';
+      ctx.fillRect(px + x*scale, py + y*scale, scale-1, scale-1);
+    }
+
+    // Cámaras
+    for (let i=0;i<cameras.length;i++){
+      const c = cameras[i];
+      ctx.fillStyle = (camIndex===i)?'#0f0':'#0bf';
+      ctx.fillRect(px + c.x*scale-3, py + c.y*scale-3, 6,6);
+    }
+
+    // Dirección de la cámara activa
+    ctx.strokeStyle = '#ff0';
+    ctx.beginPath();
+    ctx.moveTo(px + cam.x*scale, py + cam.y*scale);
+    ctx.lineTo(px + (cam.x + Math.cos(angle))*scale*0.9, py + (cam.y + Math.sin(angle))*scale*0.9);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  requestAnimationFrame(update);
+})();
+</script>
+</body>
+</html>

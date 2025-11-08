@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeHome System - Inicio de Sesión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #e2e8f0;
+        }
+
+        .login-container {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            color: #60a5fa;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+        }
+
+        .subtitle {
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: rgba(51, 65, 85, 0.8);
+            border-radius: 25px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid rgba(148, 163, 184, 0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(51, 65, 85, 0.6);
+            color: #e2e8f0;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+            background: rgba(51, 65, 85, 0.8);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            color: #f87171;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #34d399;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .security-badge {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .security-badge h4 {
+            color: #34d399;
+            margin-bottom: 0.5rem;
+        }
+
+        .security-badge p {
+            color: #cbd5e1;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🏠 SafeHome System</div>
+        <div class="subtitle">Sistema de Seguridad Residencial</div>
+        
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="loginBtn">Iniciar Sesión</button>
+            <button class="mode-btn" id="registerBtn">Crear Cuenta</button>
+        </div>
+
+        <form id="authForm">
+            <div class="form-group">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" required>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Iniciar Sesión</button>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+        </form>
+
+        <div class="security-badge">
+            <h4>🔒 Protegido por SafeHome</h4>
+            <p>Sistema de seguridad certificado para tu hogar</p>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentMode = 'login';
+        
+        // Elementos del DOM
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const authForm = document.getElementById('authForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        // Función para cambiar modo (solo cambia el texto)
+        function toggleMode() {
+            if (currentMode === 'login') {
+                currentMode = 'register';
+                loginBtn.classList.remove('active');
+                registerBtn.classList.add('active');
+                submitBtn.textContent = 'Crear Cuenta';
+            } else {
+                currentMode = 'login';
+                registerBtn.classList.remove('active');
+                loginBtn.classList.add('active');
+                submitBtn.textContent = 'Iniciar Sesión';
+            }
+        }
+
+        // Event listeners para los botones de modo
+        loginBtn.addEventListener('click', toggleMode);
+        registerBtn.addEventListener('click', toggleMode);
+
+        // Función para validar email
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Función para validar contraseña
+        function validatePassword(password) {
+            // Mínimo 6 caracteres
+            return password.length >= 6;
+        }
+
+        // Función para mostrar mensaje de error
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+
+        // Función para mostrar mensaje de éxito
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+
+        // Función para ocultar mensajes
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+
+        // Función para simular redirección
+        function redirectToDashboard() {
+            // Simular carga
+            submitBtn.textContent = 'Redirigiendo...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                // Crear página temporal de éxito
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        }
+
+        // Función para validar credenciales (simulada)
+        function validateCredentials(email, password) {
+            // Credenciales de ejemplo para demostración
+            const validCredentials = [
+                { email: 'Bossmoises20@gmail.com', password: 'perry123' },
+                { email: 'usuario@safehome.com', password: 'password123' },
+                { email: 'test@safehome.com', password: 'test123' }
+            ];
+
+            return validCredentials.some(cred => 
+                cred.email === email && cred.password === password
+            );
+        }
+
+        // Event listener para el formulario
+        authForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            hideMessages();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Validaciones
+            if (!email) {
+                showError('Por favor, ingresa tu correo electrónico.');
+                return;
+            }
+
+            if (!password) {
+                showError('Por favor, ingresa tu contraseña.');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showError('Por favor, ingresa un correo electrónico válido.');
+                return;
+            }
+
+            if (!validatePassword(password)) {
+                showError('La contraseña debe tener al menos 6 caracteres.');
+                return;
+            }
+
+            // Simular validación de credenciales
+            if (currentMode === 'login') {
+                if (validateCredentials(email, password)) {
+                    showSuccess('¡Inicio de sesión exitoso! Redirigiendo...');
+                    redirectToDashboard();
+                } else {
+                    showError('Credenciales incorrectas. Intenta nuevamente.');
+                }
+            } else {
+                // Modo crear cuenta (simulado)
+                showSuccess('¡Cuenta creada exitosamente! Redirigiendo...');
+                redirectToDashboard();
+            }
+        });
+
+        // Función para limpiar el formulario
+        function clearForm() {
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+            hideMessages();
+        }
+
+        // Limpiar mensajes al escribir
+        document.getElementById('email').addEventListener('input', hideMessages);
+        document.getElementById('password').addEventListener('input', hideMessages);
+
+        // Inicialización
+        console.log('SafeHome System - Sistema de inicio de sesión cargado');
+        console.log('Credenciales de prueba:');
+        console.log('Bossmoises20@gmail.com / perry123');
+        console.log('usuario@safehome.com / password123');
+        console.log('test@safehome.com / test123');
+    </script>
+</body>
+</html>

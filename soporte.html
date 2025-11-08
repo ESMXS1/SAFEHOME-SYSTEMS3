@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeHome System - Soporte Técnico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .navbar {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: #60a5fa;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .nav-link.active {
+            color: #60a5fa;
+            background: rgba(96, 165, 250, 0.2);
+            border-color: rgba(96, 165, 250, 0.5);
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .support-section {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #60a5fa;
+            margin-bottom: 1rem;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+        }
+
+        /* Chatbot Styles */
+        .chatbot-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(51, 65, 85, 0.3);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message.bot {
+            background: rgba(51, 65, 85, 0.8);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .message.system {
+            background: rgba(34, 197, 94, 0.1);
+            color: #34d399;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            text-align: center;
+            font-style: italic;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid rgba(148, 163, 184, 0.3);
+            border-radius: 8px;
+            background: rgba(51, 65, 85, 0.6);
+            color: #e2e8f0;
+            font-size: 1rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        .send-btn {
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .send-btn:hover {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transform: translateY(-1px);
+        }
+
+        /* Appointment System Styles */
+        .appointment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #e2e8f0;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid rgba(148, 163, 184, 0.3);
+            border-radius: 8px;
+            background: rgba(51, 65, 85, 0.6);
+            color: #e2e8f0;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-appointment {
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .submit-appointment:hover {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            transform: translateY(-1px);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action-btn {
+            padding: 1rem;
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 10px;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .quick-action-btn:hover {
+            border-color: rgba(96, 165, 250, 0.5);
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .quick-action-btn.active {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            border-color: #60a5fa;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-1px);
+        }
+
+        .ticket-status {
+            display: none;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .ticket-status.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #34d399;
+        }
+
+        .ticket-status.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🏠 SafeHome System</div>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="soporte.html" class="nav-link active">Soporte Técnico</a>
+            <a href="#" class="nav-link">Configuración</a>
+            <a href="index.html" class="logout-btn" onclick="logout()">Cerrar Sesión</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <!-- Chatbot Section -->
+        <div class="support-section">
+            <h2 class="section-title">💬 Asistente Virtual</h2>
+            
+            <div class="quick-actions">
+                <button class="quick-action-btn" onclick="askQuestion('camaras')">Problema con Cámaras</button>
+                <button class="quick-action-btn" onclick="askQuestion('alarma')">Sistema de Alarmas</button>
+                <button class="quick-action-btn" onclick="askQuestion('wifi')">Conexión WiFi</button>
+                <button class="quick-action-btn" onclick="askQuestion('app')">Aplicación Móvil</button>
+            </div>
+
+            <div class="chatbot-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message system">
+                        ¡Hola! Soy el asistente virtual de SafeHome. ¿En qué puedo ayudarte hoy?
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu pregunta aquí..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="sendMessage()">Enviar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment Section -->
+        <div class="support-section" id="appointments">
+            <h2 class="section-title">📅 Agendar Cita Técnica</h2>
+            
+            <form class="appointment-form" id="appointmentForm">
+                <div class="form-group">
+                    <label for="customerName">Nombre Completo</label>
+                    <input type="text" id="customerName" name="customerName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerEmail">Correo Electrónico</label>
+                    <input type="email" id="customerEmail" name="customerEmail" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerPhone">Teléfono</label>
+                    <input type="tel" id="customerPhone" name="customerPhone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="serviceType">Tipo de Servicio</label>
+                    <select id="serviceType" name="serviceType" required>
+                        <option value="">Selecciona un servicio</option>
+                        <option value="mantenimiento">Mantenimiento Preventivo</option>
+                        <option value="reparacion">Reparación de Equipos</option>
+                        <option value="instalacion">Instalación de Nuevos Equipos</option>
+                        <option value="configuracion">Configuración del Sistema</option>
+                        <option value="diagnostico">Diagnóstico General</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="appointmentDate">Fecha Preferida</label>
+                    <input type="date" id="appointmentDate" name="appointmentDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="appointmentTime">Hora Preferida</label>
+                    <select id="appointmentTime" name="appointmentTime" required>
+                        <option value="">Selecciona una hora</option>
+                        <option value="08:00">08:00 AM</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="13:00">01:00 PM</option>
+                        <option value="14:00">02:00 PM</option>
+                        <option value="15:00">03:00 PM</option>
+                        <option value="16:00">04:00 PM</option>
+                        <option value="17:00">05:00 PM</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="problemDescription">Descripción del Problema</label>
+                    <textarea id="problemDescription" name="problemDescription" placeholder="Describe el problema que estás experimentando o el servicio que necesitas..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-appointment">Agendar Cita</button>
+                
+                <div class="ticket-status" id="ticketStatus"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Base de conocimiento del chatbot
+        const chatbotKnowledge = {
+            'camaras': {
+                questions: ['cámaras', 'camera', 'video', 'grabación', 'vision'],
+                responses: [
+                    "Para problemas con cámaras, verifica: 1) Conexión de cables, 2) Alimentación eléctrica, 3) Conexión WiFi/red. ¿Qué problema específico tienes?",
+                    "¿Las cámaras no están grabando? Revisa el almacenamiento y la configuración de grabación continua.",
+                    "Si las cámaras no se conectan, reinicia el sistema y verifica la configuración de red."
+                ]
+            },
+            'alarma': {
+                questions: ['alarma', 'alarm', 'sensor', 'detector', 'seguridad'],
+                responses: [
+                    "Para el sistema de alarmas: 1) Verifica que esté armado, 2) Revisa el estado de las baterías, 3) Comprueba la conexión de sensores.",
+                    "¿La alarma no funciona? Verifica la configuración y el estado de la conexión telefónica/internet.",
+                    "Para falsas alarmas, revisa la sensibilidad de los detectores de movimiento."
+                ]
+            },
+            'wifi': {
+                questions: ['wifi', 'internet', 'conexión', 'red', 'network'],
+                responses: [
+                    "Para problemas de WiFi: 1) Reinicia el router, 2) Verifica la señal, 3) Comprueba las credenciales de red.",
+                    "¿El sistema no se conecta? Verifica que esté en el rango del WiFi y que la contraseña sea correcta.",
+                    "Para mejorar la señal, considera la ubicación del router o usar un extensor de señal."
+                ]
+            },
+            'app': {
+                questions: ['app', 'aplicación', 'móvil', 'smartphone', 'notificaciones'],
+                responses: [
+                    "Para la app móvil: 1) Actualiza la aplicación, 2) Verifica los permisos de notificaciones, 3) Reinicia la app.",
+                    "¿No recibes notificaciones? Verifica la configuración de notificaciones en tu dispositivo.",
+                    "Para problemas de login, verifica tus credenciales y la conexión a internet."
+                ]
+            }
+        };
+
+        let currentTicketId = null;
+
+        function askQuestion(type) {
+            const responses = chatbotKnowledge[type]?.responses;
+            if (responses) {
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(randomResponse, 'bot');
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addMessage(message, 'user');
+                input.value = '';
+                
+                // Simular respuesta del bot
+                setTimeout(() => {
+                    const botResponse = getBotResponse(message);
+                    addMessage(botResponse, 'bot');
+                }, 1000);
+            }
+        }
+
+        function getBotResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Buscar coincidencias en la base de conocimiento
+            for (const [key, data] of Object.entries(chatbotKnowledge)) {
+                if (data.questions.some(q => lowerMessage.includes(q))) {
+                    const responses = data.responses;
+                    return responses[Math.floor(Math.random() * responses.length)];
+                }
+            }
+            
+            // Respuestas genéricas
+            const genericResponses = [
+                "Entiendo tu consulta. ¿Podrías ser más específico sobre el problema?",
+                "Gracias por contactarnos. Nuestro equipo técnico puede ayudarte mejor si describes el problema en detalle.",
+                "¿Has probado reiniciar el sistema? Esto suele resolver muchos problemas técnicos.",
+                "Para una asistencia más personalizada, te recomiendo agendar una cita técnica usando el formulario al lado.",
+                "¿Necesitas ayuda con cámaras, alarmas, WiFi o la aplicación móvil? Puedo ayudarte con cualquiera de estos temas."
+            ];
+            
+            return genericResponses[Math.floor(Math.random() * genericResponses.length)];
+        }
+
+        function addMessage(text, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = text;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                window.location.href = 'inicio.html';
+            }
+        }
+
+        // Manejo del formulario de citas
+        document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const appointmentData = Object.fromEntries(formData);
+            
+            // Generar ID de ticket
+            currentTicketId = 'TICKET-' + Date.now();
+            
+            // Simular envío
+            const statusDiv = document.getElementById('ticketStatus');
+            statusDiv.className = 'ticket-status success';
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `
+                <strong>¡Cita Agendada Exitosamente!</strong><br>
+                Ticket ID: ${currentTicketId}<br>
+                Fecha: ${appointmentData.appointmentDate} a las ${appointmentData.appointmentTime}<br>
+                Nuestro equipo técnico se pondrá en contacto contigo para confirmar.
+            `;
+            
+            // Limpiar formulario
+            this.reset();
+            
+            // Ocultar mensaje después de 10 segundos
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 10000);
+        });
+
+        // Establecer fecha mínima para la cita (hoy)
+        document.getElementById('appointmentDate').min = new Date().toISOString().split('T')[0];
+
+        // Efecto de carga suave
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.support-section');
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    section.style.transition = 'all 0.5s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+
+        console.log('SafeHome Soporte Técnico cargado correctamente');
+    </script>
+</body>
+</html>
